@@ -205,6 +205,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   Column _colorPalette() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Color',
@@ -214,10 +215,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
           height: 10,
         ),
         Wrap(
+          alignment: WrapAlignment.start,
           children: List<Widget>.generate(
               3,
-                  (index) =>
-                  GestureDetector(
+              (index) => GestureDetector(
                     onTap: () {
                       setState(() {
                         _selectedColor = index;

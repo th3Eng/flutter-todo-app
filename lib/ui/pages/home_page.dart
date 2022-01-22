@@ -1,4 +1,5 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     notifyHelper = NotifyHelper();
+    _taskController.getTasks();
   }
 
   final TaskController _taskController = TaskController();
@@ -55,15 +57,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   AppBar _appBar() => AppBar(
-        elevation: 0,
+    elevation: 0,
         backgroundColor: context.theme.backgroundColor,
         centerTitle: true,
-        actions: const [
-          CircleAvatar(
+        actions: [
+          IconButton(
+              color: Get.isDarkMode ? Colors.white : darkGreyClr,
+              onPressed: () {
+                NotifyHelper().cancelAllNotification();
+                _taskController.deleteAll();
+              },
+              icon: const Icon(Icons.cleaning_services_outlined)),
+          const SizedBox(
+            width: 15,
+          ),
+          const CircleAvatar(
             backgroundImage: AssetImage('images/person.jpeg'),
             radius: 18,
           ),
-          SizedBox(
+          const SizedBox(
             width: 15,
           )
         ],
@@ -145,31 +157,43 @@ class _HomePageState extends State<HomePage> {
 
   _showTasks() {
     return Expanded(
-      child: ListView.builder(
-        scrollDirection: SizeConfig.orientation == Orientation.portrait
-            ? Axis.vertical
-            : Axis.horizontal,
-        itemCount: _taskController.taskList.length,
-        itemBuilder: (BuildContext context, int index) {
-          Task task = _taskController.taskList[index];
-          var myDate = DateFormat('hh:mm').format(DateFormat.jm().parse(task.startTime!));
-          var hour = myDate.split(':')[0];
-          var minute = myDate.split(':')[1];
-          notifyHelper.scheduledNotification(int.parse(hour), int.parse(minute), task);
-          return AnimationConfiguration.staggeredList(
-            duration: const Duration(milliseconds: 750),
-            position: index,
-            child: SlideAnimation(
-              horizontalOffset: 300,
-              child: FadeInAnimation(
-                child: GestureDetector(
-                    onTap: () => _showButtomSheet(context, task),
-                    child: TaskTile(task)),
+      child: Obx(() => _taskController.taskList.isEmpty
+          ? _noTaskMsg()
+          : RefreshIndicator(
+              onRefresh: () => _taskController.getTasks(),
+              child: ListView.builder(
+                scrollDirection: SizeConfig.orientation == Orientation.portrait
+                    ? Axis.vertical
+                    : Axis.horizontal,
+                itemCount: _taskController.taskList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Task task = _taskController.taskList[index];
+                  if (task.date != DateFormat.yMd().format(_selectedDate) &&
+                      task.repeat != 'Daily')
+                    return Container(
+                      height: 0,
+                    );
+                  var myDate = DateFormat('hh:mm')
+                      .format(DateFormat.jm().parse(task.startTime!));
+                  var hour = myDate.split(':')[0];
+                  var minute = myDate.split(':')[1];
+                  notifyHelper.scheduledNotification(
+                      int.parse(hour), int.parse(minute), task);
+                  return AnimationConfiguration.staggeredList(
+                    duration: const Duration(milliseconds: 750),
+                    position: index,
+                    child: SlideAnimation(
+                      horizontalOffset: 300,
+                      child: FadeInAnimation(
+                        child: GestureDetector(
+                            onTap: () => _showButtomSheet(context, task),
+                            child: TaskTile(task)),
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-          );
-        },
-      ),
+            )),
     );
   }
 
@@ -244,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                 : _buildBottomSheet(
                     label: 'Task Completed?',
                     onTap: () {
-                      task.isCompleted = 1;
+                      _taskController.markAsCompleted(id: task.id!);
                       Get.back();
                     },
                     clr: primaryClr,
@@ -252,6 +276,7 @@ class _HomePageState extends State<HomePage> {
             _buildBottomSheet(
               label: 'Delete task',
               onTap: () {
+                _taskController.deleteTasks(task: task);
                 Get.back();
               },
               clr: primaryClr,

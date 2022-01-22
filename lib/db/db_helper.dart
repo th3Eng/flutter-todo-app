@@ -46,14 +46,19 @@ CREATE TABLE $_tableName(id INTEGER PRIMARY KEY AUTOINCREMENT
     return await _db!.delete(_tableName, where: 'id = ?', whereArgs: [task.id]);
   }
 
-  Future<int> update(Task task) async {
+  Future<int> deleteAll() async {
+    debugPrint('DB delete: function called!');
+    return await _db!.delete(_tableName);
+  }
+
+  Future<int> update(int id) async {
     debugPrint('DB update: function called!');
     return await _db!.rawUpdate('''
     UPDATE $_tableName SET isCompleted = ? WHERE id = ?
-    ''', [1, task.id]);
+    ''', [1, id]);
   }
 
-  Future<List<Map<String, dynamic>>> query(Task task) async {
+  Future<List<Map<String, dynamic>>> query() async {
     debugPrint('DB query: function called!');
     return await _db!.query(_tableName);
   }

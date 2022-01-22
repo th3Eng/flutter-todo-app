@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo/services/theme_services.dart';
 
 import '../theme.dart';
 
@@ -28,7 +29,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       backgroundColor: context.theme.backgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: context.theme.backgroundColor,
         centerTitle: true,
         title: Text(
           _payload.toString().split('|')[0],
@@ -36,8 +37,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+          ),
+          color: Get.isDarkMode ? Colors.white : darkGreyClr,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_backup_restore_sharp),
+            onPressed: () {
+              ThemeServices().switchTheme();
+            },
+          )
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -71,7 +83,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 margin: const EdgeInsets.symmetric(horizontal: 30),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
@@ -83,24 +96,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.text_format, size: 30, color:Colors.white),
+                          const Icon(Icons.text_format,
+                              size: 30, color: Colors.white),
                           const SizedBox(
                             width: 10,
                           ),
                           Text(
                             _payload.toString().split('|')[0],
                             style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500,
-                                color:Colors.white,),
+                              fontSize: 30,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
                             textAlign: TextAlign.justify,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20,),
+                      const SizedBox(
+                        height: 20,
+                      ),
                       Row(
                         children: [
-                          const Icon(Icons.description, size: 30, color:Colors.white),
+                          const Icon(Icons.description,
+                              size: 30, color: Colors.white),
                           const SizedBox(
                             width: 10,
                           ),
@@ -114,10 +132,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20,),
+                      const SizedBox(
+                        height: 20,
+                      ),
                       Row(
                         children: [
-                          const Icon(Icons.date_range, size: 30, color:Colors.white),
+                          const Icon(Icons.date_range,
+                              size: 30, color: Colors.white),
                           const SizedBox(
                             width: 10,
                           ),

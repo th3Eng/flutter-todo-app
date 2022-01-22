@@ -22,8 +22,8 @@ class Task {
       required this.repeat,
       required this.remind});
 
-  Map<String,dynamic> toJson(){
-    return{
+  Map<String, dynamic> toJson() {
+    return {
       'id': id,
       'title': title,
       'note': note,
@@ -34,7 +34,19 @@ class Task {
       'color': color,
       'repeat': repeat,
       'remind': remind,
-
     };
+  }
+
+  Task.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    title = json['title'];
+    note = json['note'];
+    isCompleted = json['isCompleted'];
+    date = json['date'];
+    startTime = json['startTime'];
+    endTime = json['endTime'];
+    color = json['color'];
+    repeat = json['repeat'];
+    remind = json['remind'];
   }
 }

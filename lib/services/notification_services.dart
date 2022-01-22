@@ -67,6 +67,14 @@ class NotifyHelper {
     );
   }
 
+  cancelNotification(Task task) async {
+    await flutterLocalNotificationsPlugin.cancel(task.id!);
+  }
+
+  cancelAllNotification() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
   scheduledNotification(int hour, int minutes, Task task) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
       task.id!,
